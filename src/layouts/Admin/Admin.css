@@ -1,0 +1,159 @@
+.adminBody{
+    height: 90vh;
+    width: 100vw;
+  
+    background: radial-gradient(circle, rgba(12,23,19,1) 30%, rgba(7,7,10,1) 100%);
+  
+    margin: 0;
+    padding: 0;
+  
+    display: flex;
+    flex-direction: row;
+  
+    justify-content: center;
+    align-items: center;
+}
+
+.adminBG{
+    height: 90vh;
+    width: 100vw;
+    
+    margin: 0;
+    padding: 0;
+  
+    display: flex;
+    flex-direction: row;
+  
+    justify-content: end;
+    align-items: end;
+
+    z-index: 0;
+    position: absolute;
+}
+
+.adminBG img{
+    height: 90vh;
+    z-index: 0;
+    position: absolute;
+}
+
+.adminContainer{
+    height: 80vh;
+    width: 80vw;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+
+    background-color: rgba(82,87,92,0.75);
+    color: white;
+    border-radius: 1em;
+    z-index: 1;
+}
+
+.adminButtonsContainer{
+    height: 20vh;
+    width: 60vw;
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: row;
+}
+
+.adminButtons {
+
+    width: 6em;
+    height: 3em;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    background-color: #101013;
+  
+    border-radius: 0.5em;
+    transition: 0.3s;
+    color: white;
+  
+    cursor: pointer;
+}
+
+.adminButtons:hover {
+
+    background-color: #4545c3;
+    transition: 0.3s;
+}
+
+.adminInfo{
+    height: 80vh;
+    width: 70vw;
+
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    scrollbar-width: none
+}
+
+.adminContainer3{
+    height: 20vh;
+    width: 70vw;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+}
+
+.userInformation{
+    
+    height: 30vh;
+    width: 70vw;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+    border-top: 5vh
+
+}
+
+.characterInformation{
+    
+    height: 25vh;
+    width: 70vw;
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
+    flex-direction: column;
+    border-top: 5vh;
+
+    cursor: pointer;
+}
+
+.adminRigthContainer{
+    height: 20vh;
+    width: 70vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.adminRigthButtonsContainer{
+    height: 10vh;
+    width: 70vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.userSplit{
+    height: 0.5vh;
+    width: 70vw;
+    background-color: black;
+    border-radius: 1em;
+}
