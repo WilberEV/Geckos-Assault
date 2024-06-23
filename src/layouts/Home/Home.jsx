@@ -42,7 +42,7 @@ export const Home = () => {
         setMessage("May your path be lighted.");
 
         setTimeout(() => {
-          navigate("/");
+          navigate("/gameboard");
         }, 2750);
       })
       .catch((error) => console.log(error));
