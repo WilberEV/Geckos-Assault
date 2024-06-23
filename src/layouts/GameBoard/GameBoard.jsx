@@ -66,8 +66,7 @@ export const GameBoard = () => {
     )
       .then((results) => {
         
-        setEnemyDetails(results.data[0]);
-        setEnemyPicture(results.data[0].IMG)
+        setEnemyDetails(results.data);
       })
       .catch((error) => console.log(error));
   });
