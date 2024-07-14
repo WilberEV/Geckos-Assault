@@ -28,6 +28,7 @@ export const GameBoard = () => {
       HP: 0,
       Attack: 0,
       Defense: 0,
+      Charisma: 999,
       EXP: 0,
     },
     IMG: "",
@@ -40,7 +41,10 @@ export const GameBoard = () => {
     Max: 0,
     Current: 0,
   });
+
   const [turn, setTurn] = useState(0);
+  const [statsMenu, setStatsMenu] = useState(0);
+  const [itemMenu, setItemMenu] = useState(0);
 
   useEffect(() => {
     bringUserProfile(
@@ -163,42 +167,59 @@ export const GameBoard = () => {
         <div className="gameScreen">
           {enemyDetails.name !== "" ? (
             <div>
-              {turn == 0 ? (
-                <div onClick={() => setTurn(1)}>{GameScreen[turn]}</div>
+              {itemMenu == 1 ? (
+                <div onClick={() => setItemMenu(0)}>INVENTORY</div>
               ) : (
                 <div>
-                  {turn == 1 ? (
-                    <div>
-                      {GameScreen[1]}
-                      {charaDetails[0].user}
-                      {GameScreen[2]}
+                  {statsMenu == 1 ? (
+                    <div onClick={() => setStatsMenu(0)}>
+                      <div>Attack: {charaDetails[0].stats.Attack}</div>
+                      <div>Defense: {charaDetails[0].stats.Defense}</div>
+                      <div>Charisma: {charaDetails[0].stats.Charisma}</div>
+                      <div>EXP: {charaDetails[0].stats.EXP}</div>
                     </div>
                   ) : (
                     <div>
-                      {turn == 2 ? (
-                        <div onClick={() => setTurn(3)}>
-                          {charaDetails[0].user}
-                          {GameScreen[3]}
-                          {enemyDetails.name}
-                        </div>
+                      {turn == 0 ? (
+                        <div onClick={() => setTurn(1)}>{GameScreen[turn]}</div>
                       ) : (
                         <div>
-                          {turn == 3 ? (
-                            <div onClick={() => attack()}>
+                          {turn == 1 ? (
+                            <div>
                               {GameScreen[1]}
-                              {enemyDetails.name}
+                              {charaDetails[0].user}
                               {GameScreen[2]}
                             </div>
                           ) : (
                             <div>
-                              {turn == 4 ? (
-                                <div onClick={() => setTurn(1)}>
-                                  {enemyDetails.name}
-                                  {GameScreen[3]}
+                              {turn == 2 ? (
+                                <div onClick={() => setTurn(3)}>
                                   {charaDetails[0].user}
+                                  {GameScreen[3]}
+                                  {enemyDetails.name}
                                 </div>
                               ) : (
-                                <div>Loading</div>
+                                <div>
+                                  {turn == 3 ? (
+                                    <div onClick={() => attack()}>
+                                      {GameScreen[1]}
+                                      {enemyDetails.name}
+                                      {GameScreen[2]}
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      {turn == 4 ? (
+                                        <div onClick={() => setTurn(1)}>
+                                          {enemyDetails.name}
+                                          {GameScreen[3]}
+                                          {charaDetails[0].user}
+                                        </div>
+                                      ) : (
+                                        <div>Loading</div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
                           )}
@@ -254,8 +275,12 @@ export const GameBoard = () => {
                 <div className="terminalButton">FIGHT</div>
               )}
             </div>
-            <div className="terminalButton">ITEM</div>
-            <div className="terminalButton">STATS</div>
+            <div className="terminalButton" onClick={() => setItemMenu(1)}>
+              ITEM
+            </div>
+            <div className="terminalButton" onClick={() => setStatsMenu(1)}>
+              STATS
+            </div>
             <div className="terminalButton">RIZZ</div>
           </div>
         </div>
