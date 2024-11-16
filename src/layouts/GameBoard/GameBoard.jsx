@@ -28,7 +28,6 @@ export const GameBoard = () => {
       HP: 0,
       Attack: 0,
       Defense: 0,
-      Charisma: 999,
       EXP: 0,
     },
     IMG: "",
@@ -45,6 +44,7 @@ export const GameBoard = () => {
   const [turn, setTurn] = useState(0);
   const [statsMenu, setStatsMenu] = useState(0);
   const [itemMenu, setItemMenu] = useState(0);
+  const [enemyCount, setEnemyCount] = useState(0);
 
   useEffect(() => {
     bringUserProfile(
@@ -60,10 +60,18 @@ export const GameBoard = () => {
 
   useEffect(() => {
     let ID = Math.round((Math.random() * 10) / 2);
+
     if (ID == 0) {
       ID = ID + 1;
     }
-    let stratum = charaDetails.stratum;
+    let stratum = 0;
+
+    if (charaDetails.stratum){
+      stratum = charaDetails.stratum
+    } else {
+      stratum = charaDetails[0].stratum
+    }
+
     let type = "";
     if (charaDetails.area == 10) {
       type = "BOSS";
@@ -74,8 +82,9 @@ export const GameBoard = () => {
         setEnemyDetails(results.data);
         setEnemyHP(results.data.stats);
       })
-      .catch((error) => console.log(error));
-  });
+      .catch((error) => console.log(error)
+    );
+  }, [enemyCount]);
 
   //Handlers
   useEffect(() => {
@@ -89,7 +98,7 @@ export const GameBoard = () => {
     let ATK = 0;
     let DEF = 0;
 
-    if (turn == 1) {
+    if (turn == 3) {
       ATK = charaDetails[0].stats.Attack;
       DEF = enemyDetails.stats.Defense;
 
@@ -100,9 +109,8 @@ export const GameBoard = () => {
       };
 
       setEnemyHP(HP);
-      setTurn(2);
-      attack();
-    } else if (turn == 3) {
+      setTurn(4);
+    } else if (turn == 5) {
       ATK = enemyDetails.stats.Attack;
       DEF = charaDetails[0].stats.Defense;
 
@@ -115,8 +123,9 @@ export const GameBoard = () => {
       };
 
       setPlayerHP(HP);
-      setTurn(4);
+      setTurn(6);
     }
+    
   };
 
   const atkDamage = (ATK, DEF) => {
@@ -139,28 +148,42 @@ export const GameBoard = () => {
     return damage;
   };
 
+  const checkEnemyHP = ()=>{
+    if (enemyHP.HP <= 0){
+      setTurn(7)
+    } else {
+      setTurn(5)
+    }
+  }
+
   return (
     <div className="gameBody">
-      <div className="gameUp">
-        <div className="gameUpLeft">
-          <div className="enemyStats">
-            <div>{enemyDetails.name}</div>
-            <div>
-              {enemyDetails.stats.HP} / {enemyHP.HP}
+      <div>
+        {enemyCount > 0 ? (
+          <div className="gameUp">
+            <div className="gameUpLeft">
+              <div className="enemyStats">
+                <div>{enemyDetails.name}</div>
+                <div>
+                  {enemyDetails.stats.HP} / {enemyHP.HP}
+                </div>
+              </div>
+            </div>
+
+            <div className="gameUpRight">
+              <div className="enemySprite">
+                {enemyDetails.IMG !== "" ? (
+                  <img src={enemyDetails.IMG} />
+                ) : (
+                  <div>Loading</div>
+                )}
+              </div>
+              <div className="enemyStage"></div>
             </div>
           </div>
-        </div>
-
-        <div className="gameUpRight">
-          <div className="enemySprite">
-            {enemyDetails.IMG !== "" ? (
-              <img src={enemyDetails.IMG} />
-            ) : (
-              <div>Loading</div>
-            )}
-          </div>
-          <div className="enemyStage"></div>
-        </div>
+        ) : (
+          <div></div>
+        )}
       </div>
 
       <div className="gameMid">
@@ -181,41 +204,73 @@ export const GameBoard = () => {
                   ) : (
                     <div>
                       {turn == 0 ? (
-                        <div onClick={() => setTurn(1)}>{GameScreen[turn]}</div>
+                        <div onClick={() => setTurn(1)}>{GameScreen[0]}</div>
                       ) : (
                         <div>
                           {turn == 1 ? (
-                            <div>
+                            <div
+                              onClick={() => {
+                                setTurn(2);
+                                setEnemyCount(enemyCount + 1);
+                              }}
+                            >
                               {GameScreen[1]}
-                              {charaDetails[0].user}
-                              {GameScreen[2]}
                             </div>
                           ) : (
                             <div>
                               {turn == 2 ? (
                                 <div onClick={() => setTurn(3)}>
-                                  {charaDetails[0].user}
-                                  {GameScreen[3]}
+                                  {GameScreen[2]}
                                   {enemyDetails.name}
                                 </div>
                               ) : (
                                 <div>
                                   {turn == 3 ? (
-                                    <div onClick={() => attack()}>
-                                      {GameScreen[1]}
-                                      {enemyDetails.name}
-                                      {GameScreen[2]}
+                                    <div>
+                                      {GameScreen[3]}
+                                      {charaDetails[0].user}
+                                      {GameScreen[4]}
                                     </div>
                                   ) : (
                                     <div>
                                       {turn == 4 ? (
-                                        <div onClick={() => setTurn(1)}>
-                                          {enemyDetails.name}
-                                          {GameScreen[3]}
+                                        <div onClick={() => checkEnemyHP()}>
                                           {charaDetails[0].user}
+                                          {GameScreen[5]}
+                                          {enemyDetails.name}
                                         </div>
                                       ) : (
-                                        <div>Loading</div>
+                                        <div>
+                                          {turn == 5 ? (
+                                            <div onClick={() => attack()}>
+                                              {GameScreen[3]}
+                                              {enemyDetails.name}
+                                              {GameScreen[4]}
+                                            </div>
+                                          ) : (
+                                            <div>
+                                              {turn == 6 ? (
+                                                <div onClick={() => setTurn(3)}>
+                                                  {enemyDetails.name}
+                                                  {GameScreen[5]}
+                                                  {charaDetails[0].user}
+                                                </div>
+                                          ) : (
+                                            <div>
+                                            {turn == 7 ? (
+                                              <div onClick={() => setTurn(1)}>
+                                                {charaDetails[0].user}
+                                                {GameScreen[6]}
+                                                {enemyDetails.name}
+                                              </div>
+                                              ) : (
+                                                <div>Loading</div>
+                                              )}
+                                                </div>
+                                          )}
+                                            </div>
+                                          )}
+                                        </div>
                                       )}
                                     </div>
                                   )}
@@ -266,19 +321,32 @@ export const GameBoard = () => {
 
         <div className="gameDownRight">
           <div className="terminal">
-            <div className="terminalButton">
-              {turn == 1 ? (
-                <div className="terminalButton" onClick={() => attack()}>
-                  FIGHT
-                </div>
-              ) : (
-                <div className="terminalButton">FIGHT</div>
-              )}
+            <div
+              className="terminalButton"
+              onClick={() => {
+                setStatsMenu(0);
+                setItemMenu(0);
+                attack();
+              }}
+            >
+              FIGHT
             </div>
-            <div className="terminalButton" onClick={() => setItemMenu(1)}>
+            <div
+              className="terminalButton"
+              onClick={() => {
+                setItemMenu(1);
+                setStatsMenu(0);
+              }}
+            >
               ITEM
             </div>
-            <div className="terminalButton" onClick={() => setStatsMenu(1)}>
+            <div
+              className="terminalButton"
+              onClick={() => {
+                setStatsMenu(1);
+                setItemMenu(0);
+              }}
+            >
               STATS
             </div>
             <div className="terminalButton">RIZZ</div>
