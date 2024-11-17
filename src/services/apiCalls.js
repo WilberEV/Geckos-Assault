@@ -31,6 +31,10 @@ export const bringUserProfile = async (id, token) => {
 //Find enemy
 export const searchEnemy = async (ID, stratum, type) => {
 
+  if (type == 'BOSS'){
+    ID = 6
+  }
+
   return await axios.get(`${URL}/enemies?ID=${ID}&stratum=${stratum}&type=${type}`);
 };
 

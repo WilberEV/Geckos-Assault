@@ -72,10 +72,17 @@ export const GameBoard = () => {
       stratum = charaDetails[0].stratum
     }
 
+    let area = 0
+    if (charaDetails.area == 0){
+      area = charaDetails.area
+    } else {
+      area = charaDetails[0].area
+    }
+
     let type = "";
-    if (charaDetails.area == 10) {
-      type = "BOSS";
-    } else type = "FOE";
+    if (area == 10){
+      type = "BOSS"
+    } else type = "FOE"
 
     searchEnemy(ID, stratum, type)
       .then((results) => {
@@ -151,6 +158,7 @@ export const GameBoard = () => {
   const checkEnemyHP = ()=>{
     if (enemyHP.HP <= 0){
       setTurn(7)
+      charaDetails[0].area = charaDetails[0].area +1
     } else {
       setTurn(5)
     }
