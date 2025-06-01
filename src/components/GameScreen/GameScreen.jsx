@@ -6,4 +6,5 @@ export const GameScreen = [
     "'s turn!",
     ' attacked ',
     ' has defeated ',
+    '. Get reckt!'
 ]

@@ -5,8 +5,7 @@ import { images } from "../../Components/Images/Images";
 import { useSelector } from "react-redux";
 import { userData } from "../userSlice";
 import { useNavigate } from "react-router-dom";
-import { bringUserProfile } from "../../services/apiCalls";
-import { searchEnemy } from "../../services/apiCalls";
+import { bringUserProfile, updateUser, searchEnemy } from "../../services/apiCalls";
 import { GameScreen } from "../../components/GameScreen/GameScreen";
 
 export const GameBoard = () => {
@@ -37,7 +36,7 @@ export const GameBoard = () => {
     HP: 0,
   });
   const [playerHP, setPlayerHP] = useState({
-    Max: 0,
+    MAX: 0,
     Current: 0,
   });
 
@@ -125,7 +124,7 @@ export const GameBoard = () => {
       let res = Math.round(playerHP.Current - damage);
 
       let HP = {
-        Max: 0,
+        MAX: 0,
         Current: res,
       };
 
@@ -141,13 +140,13 @@ export const GameBoard = () => {
     if (ATK > DEF) {
       if (damage >= 5) {
         damage = damage * 1.3;
-      } else if (damage > 3 || damage > 5) {
+      } else if (damage > 3 || damage < 5) {
         damage = damage * 1.2;
       } else if (damage <= 3) [(damage = 3)];
     } else if (ATK < DEF) {
       if (damage >= 5) {
         damage = damage / 3;
-      } else if (damage > 3 || damage > 5) {
+      } else if (damage > 3 || damage < 5) {
         damage = damage / 2;
       } else if (damage <= 3) [(damage = 3)];
     } else damage = 3;
@@ -155,13 +154,50 @@ export const GameBoard = () => {
     return damage;
   };
 
-  const checkEnemyHP = ()=>{
-    if (enemyHP.HP <= 0){
-      setTurn(7)
-      charaDetails[0].area = charaDetails[0].area +1
+  //Check if Player's or Enemy's HP is below 0
+  const checkHP = ()=>{
+    if (turn == 4) {
+      if (enemyHP.HP <= 0){
+        setTurn(7)
+        charaDetails[0].area = charaDetails[0].area +1
+      } else {
+        setTurn(5)
+      }
     } else {
-      setTurn(5)
+      if (playerHP.Current <= 0){
+        setTurn(8)
+      } else {
+        setTurn(3)
+      }
     }
+
+  }
+
+  //Update Character
+  const updateChara = ()=>{
+    let charaData = {
+      stats: {
+        Attack: charaDetails[0].stats.Attack,
+        Charisma: charaDetails[0].stats.Charisma,
+        Defense: charaDetails[0].stats.Defense,
+        EXP: charaDetails[0].stats.EXP,
+        HP: {
+          MAX: charaDetails[0].stats.HP.MAX,
+          Current: playerHP.Current
+        },
+        Level: charaDetails[0].stats.Level
+      },
+      items: charaDetails[0].items,
+      area: charaDetails[0].area,
+      stratum: charaDetails[0].stratum
+    }
+
+    updateUser(
+      charaData,
+      userRdxData.credentials.user.id,
+      userRdxData.credentials.token
+    )
+    setTurn(1)
   }
 
   return (
@@ -242,7 +278,7 @@ export const GameBoard = () => {
                                   ) : (
                                     <div>
                                       {turn == 4 ? (
-                                        <div onClick={() => checkEnemyHP()}>
+                                        <div onClick={() => checkHP()}>
                                           {charaDetails[0].user}
                                           {GameScreen[5]}
                                           {enemyDetails.name}
@@ -258,7 +294,7 @@ export const GameBoard = () => {
                                           ) : (
                                             <div>
                                               {turn == 6 ? (
-                                                <div onClick={() => setTurn(3)}>
+                                                <div onClick={() => checkHP()}>
                                                   {enemyDetails.name}
                                                   {GameScreen[5]}
                                                   {charaDetails[0].user}
@@ -266,13 +302,24 @@ export const GameBoard = () => {
                                           ) : (
                                             <div>
                                             {turn == 7 ? (
-                                              <div onClick={() => setTurn(1)}>
+                                              <div onClick={() => updateChara()}>
                                                 {charaDetails[0].user}
                                                 {GameScreen[6]}
                                                 {enemyDetails.name}
                                               </div>
                                               ) : (
-                                                <div>Loading</div>
+                                                <div>
+                                                {turn == 8 ? (
+                                                  <div>
+                                                    {enemyDetails.name}
+                                                    {GameScreen[6]}
+                                                    {charaDetails[0].user}
+                                                    {GameScreen[7]}
+                                                  </div>
+                                                  ) : (
+                                                    <div>Loading</div>
+                                                  )}
+                                                    </div>
                                               )}
                                                 </div>
                                           )}
@@ -309,7 +356,7 @@ export const GameBoard = () => {
                     <div className="playerInfo">
                       <div>{chara.user}</div>
                       <div>
-                        {chara.stats.HP.Max} / {playerHP.Current}
+                        {chara.stats.HP.MAX} / {playerHP.Current}
                       </div>
                     </div>
                     <div className="playerContainer">

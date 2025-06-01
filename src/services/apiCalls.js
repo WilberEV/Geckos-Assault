@@ -25,6 +25,17 @@ export const bringUserProfile = async (id, token) => {
   return await axios.get(`${URL}/user/${id}`, config);
 };
 
+//Update user
+
+export const updateUser = async (body, id, token) => {
+  const config = {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  };
+  return await axios.put(`${URL}/user/${id}`, body, config);
+};
+
 
 ////////////////////ENEMY RELATED FUNCTIONS////////////////////
 
