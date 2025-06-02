@@ -45,6 +45,8 @@ export const GameBoard = () => {
   const [itemMenu, setItemMenu] = useState(0);
   const [enemyCount, setEnemyCount] = useState(0);
 
+
+
   useEffect(() => {
     bringUserProfile(
       userRdxData.credentials.user.id,
@@ -124,7 +126,7 @@ export const GameBoard = () => {
       let res = Math.round(playerHP.Current - damage);
 
       let HP = {
-        MAX: 0,
+        MAX: playerHP.MAX,
         Current: res,
       };
 
@@ -169,6 +171,36 @@ export const GameBoard = () => {
       } else {
         setTurn(3)
       }
+    }
+
+  }
+
+  //Use Item
+  const useItem = (item, id)=>{
+    if (item == "Potion"){
+      let res = Math.round(playerHP.Current + 10);
+
+      if (res > playerHP.MAX){
+        res = playerHP.MAX
+      }
+
+        let HP = {
+          MAX: playerHP.MAX,
+          Current: res,
+        };
+
+        setPlayerHP(HP);
+
+        const updateItems = [...charaDetails];
+
+        updateItems[0] = {
+          ...updateItems[0],
+        items: updateItems[0].items.filter((_, index) => index !== id)
+        };
+
+          setCharaDetails(updateItems);
+
+
     }
 
   }
@@ -235,7 +267,21 @@ export const GameBoard = () => {
           {enemyDetails.name !== "" ? (
             <div>
               {itemMenu == 1 ? (
-                <div onClick={() => setItemMenu(0)}>INVENTORY</div>
+                <div >      
+                  <div>INVENTORY</div>            
+                  <div>
+                    {charaDetails[0].items.map((item, index) => {
+                  return (
+                    <div key={index} className="itemContainer">
+                      <div className="charaSelectionContainer3">
+                        <div onClick={() => useItem(item, index)} > {item} </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                  </div>
+                  <div onClick={() => setItemMenu(0)}>Close</div>
+                  </div>
               ) : (
                 <div>
                   {statsMenu == 1 ? (
