@@ -19,6 +19,8 @@ export const GameBoard = () => {
     items: [],
     area: 0,
     stratum: 1,
+    maxArea: 0,
+    maxStratum: 1,
   });
 
   const [enemyDetails, setEnemyDetails] = useState({
@@ -161,7 +163,11 @@ export const GameBoard = () => {
     if (turn == 4) {
       if (enemyHP.HP <= 0){
         setTurn(7)
-        charaDetails[0].area = charaDetails[0].area +1
+        if (charaDetails[0].area == 10){
+          charaDetails[0].area = 0,
+          charaDetails[0].stratum = charaDetails[0].stratum +1
+        } else {charaDetails[0].area = charaDetails[0].area +1}
+        charaDetails[0].stats.EXP = (charaDetails[0].stats.EXP + enemyDetails.stats.EXP)
       } else {
         setTurn(5)
       }
@@ -197,16 +203,28 @@ export const GameBoard = () => {
           ...updateItems[0],
         items: updateItems[0].items.filter((_, index) => index !== id)
         };
-
           setCharaDetails(updateItems);
-
-
     }
-
   }
 
   //Update Character
   const updateChara = ()=>{
+
+    let record = {
+        maxArea: 0,
+        maxStratum: 0
+    }
+      
+
+    if (charaDetails[0].stratum == charaDetails[0].maxStratum){
+        if (charaDetails[0].area > charaDetails[0].maxArea){
+          record.maxArea = charaDetails[0].area
+        } else record.maxArea = charaDetails[0].maxArea
+      } else if (charaDetails[0].stratum > charaDetails[0].maxStratum){
+        record.maxArea = charaDetails[0].area
+      }
+
+
     let charaData = {
       stats: {
         Attack: charaDetails[0].stats.Attack,
@@ -221,7 +239,10 @@ export const GameBoard = () => {
       },
       items: charaDetails[0].items,
       area: charaDetails[0].area,
-      stratum: charaDetails[0].stratum
+      stratum: charaDetails[0].stratum,
+      maxArea: record.maxArea,
+      maxStratum: record.maxStratum
+
     }
 
     updateUser(
@@ -245,7 +266,10 @@ export const GameBoard = () => {
                 </div>
               </div>
             </div>
-
+            <div>
+              <div className="enemyStats"> AREA: {charaDetails[0].area}</div>
+              <div className="enemyStats"> STRATUM: {charaDetails[0].stratum}</div>
+            </div>
             <div className="gameUpRight">
               <div className="enemySprite">
                 {enemyDetails.IMG !== "" ? (
@@ -290,6 +314,8 @@ export const GameBoard = () => {
                       <div>Defense: {charaDetails[0].stats.Defense}</div>
                       <div>Charisma: {charaDetails[0].stats.Charisma}</div>
                       <div>EXP: {charaDetails[0].stats.EXP}</div>
+                      <div>Max Area: {charaDetails[0].maxArea}</div>
+                      <div>Max Stratum: {charaDetails[0].maxStratum}</div>
                     </div>
                   ) : (
                     <div>
