@@ -5,8 +5,15 @@ import { images } from "../../Components/Images/Images";
 import { useSelector } from "react-redux";
 import { userData } from "../userSlice";
 import { useNavigate } from "react-router-dom";
-import { bringUserProfile, updateUser, searchEnemy } from "../../services/apiCalls";
-import { GameScreen } from "../../components/GameScreen/GameScreen";
+import {
+  bringUserProfile,
+  updateUser,
+  searchEnemy,
+} from "../../services/apiCalls";
+import { GameScreen } from "./GameScreen/GameScreen";
+import { ItemScreen } from "./GameScreen/ItemScreen";
+import { GameText } from "../../components/GameText/GameText";
+import { StatsScreen } from "./GameScreen/StatsScreen";
 
 export const GameBoard = () => {
   const userRdxData = useSelector(userData);
@@ -47,8 +54,6 @@ export const GameBoard = () => {
   const [itemMenu, setItemMenu] = useState(0);
   const [enemyCount, setEnemyCount] = useState(0);
 
-
-
   useEffect(() => {
     bringUserProfile(
       userRdxData.credentials.user.id,
@@ -69,31 +74,30 @@ export const GameBoard = () => {
     }
     let stratum = 0;
 
-    if (charaDetails.stratum){
-      stratum = charaDetails.stratum
+    if (charaDetails.stratum) {
+      stratum = charaDetails.stratum;
     } else {
-      stratum = charaDetails[0].stratum
+      stratum = charaDetails[0].stratum;
     }
 
-    let area = 0
-    if (charaDetails.area == 0){
-      area = charaDetails.area
+    let area = 0;
+    if (charaDetails.area == 0) {
+      area = charaDetails.area;
     } else {
-      area = charaDetails[0].area
+      area = charaDetails[0].area;
     }
 
     let type = "";
-    if (area == 10){
-      type = "BOSS"
-    } else type = "FOE"
+    if (area == 10) {
+      type = "BOSS";
+    } else type = "FOE";
 
     searchEnemy(ID, stratum, type)
       .then((results) => {
         setEnemyDetails(results.data);
         setEnemyHP(results.data.stats);
       })
-      .catch((error) => console.log(error)
-    );
+      .catch((error) => console.log(error));
   }, [enemyCount]);
 
   //Handlers
@@ -135,7 +139,6 @@ export const GameBoard = () => {
       setPlayerHP(HP);
       setTurn(6);
     }
-    
   };
 
   const atkDamage = (ATK, DEF) => {
@@ -159,71 +162,86 @@ export const GameBoard = () => {
   };
 
   //Check if Player's or Enemy's HP is below 0
-  const checkHP = ()=>{
+  const checkHP = () => {
     if (turn == 4) {
-      if (enemyHP.HP <= 0){
-        setTurn(7)
-        if (charaDetails[0].area == 10){
-          charaDetails[0].area = 0,
-          charaDetails[0].stratum = charaDetails[0].stratum +1
-        } else {charaDetails[0].area = charaDetails[0].area +1}
-        charaDetails[0].stats.EXP = (charaDetails[0].stats.EXP + enemyDetails.stats.EXP)
+      if (enemyHP.HP <= 0) {
+        if (charaDetails[0].area == 10) {
+          (charaDetails[0].area = 0),
+            (charaDetails[0].stratum = charaDetails[0].stratum + 1);
+        } else {
+          charaDetails[0].area = charaDetails[0].area + 1;
+        }
+
+        charaDetails[0].stats.EXP =
+          charaDetails[0].stats.EXP + enemyDetails.stats.EXP;
+
+        if (
+          charaDetails[0].stats.EXP >=
+          (charaDetails[0].stats.expMulti.Min +
+            charaDetails[0].stats.expMulti.Max) /
+            2
+        ) {
+          charaDetails[0].stats.Level = charaDetails[0].stats.Level + 1;
+          charaDetails[0].stats.expMulti.Min =
+            charaDetails[0].stats.expMulti.Max;
+          charaDetails[0].stats.expMulti.Max =
+            charaDetails[0].stats.expMulti.Max * 2;
+          setTurn(8);
+        } else {
+          setTurn(7);
+        }
       } else {
-        setTurn(5)
+        setTurn(5);
       }
     } else {
-      if (playerHP.Current <= 0){
-        setTurn(8)
+      if (playerHP.Current <= 0) {
+        setTurn(8);
       } else {
-        setTurn(3)
+        setTurn(3);
       }
     }
-
-  }
+  };
 
   //Use Item
-  const useItem = (item, id)=>{
-    if (item == "Potion"){
+  const useItem = (item, id) => {
+    if (item == "Potion") {
       let res = Math.round(playerHP.Current + 10);
 
-      if (res > playerHP.MAX){
-        res = playerHP.MAX
+      if (res > playerHP.MAX) {
+        res = playerHP.MAX;
       }
 
-        let HP = {
-          MAX: playerHP.MAX,
-          Current: res,
-        };
+      let HP = {
+        MAX: playerHP.MAX,
+        Current: res,
+      };
 
-        setPlayerHP(HP);
+      setPlayerHP(HP);
 
-        const updateItems = [...charaDetails];
+      const updateItems = [...charaDetails];
 
-        updateItems[0] = {
-          ...updateItems[0],
-        items: updateItems[0].items.filter((_, index) => index !== id)
-        };
-          setCharaDetails(updateItems);
+      updateItems[0] = {
+        ...updateItems[0],
+        items: updateItems[0].items.filter((_, index) => index !== id),
+      };
+      setCharaDetails(updateItems);
     }
-  }
+  };
 
   //Update Character
-  const updateChara = ()=>{
-
+  const updateChara = () => {
     let record = {
-        maxArea: 0,
-        maxStratum: 0
+      maxArea: 0,
+      maxStratum: 0,
+    };
+
+    if (charaDetails[0].stratum == charaDetails[0].maxStratum) {
+      if (charaDetails[0].area > charaDetails[0].maxArea) {
+        record.maxArea = charaDetails[0].area;
+      } else record.maxArea = charaDetails[0].maxArea;
+    } else if (charaDetails[0].stratum > charaDetails[0].maxStratum) {
+      record.maxArea = charaDetails[0].area;
     }
-      
-
-    if (charaDetails[0].stratum == charaDetails[0].maxStratum){
-        if (charaDetails[0].area > charaDetails[0].maxArea){
-          record.maxArea = charaDetails[0].area
-        } else record.maxArea = charaDetails[0].maxArea
-      } else if (charaDetails[0].stratum > charaDetails[0].maxStratum){
-        record.maxArea = charaDetails[0].area
-      }
-
 
     let charaData = {
       stats: {
@@ -233,25 +251,24 @@ export const GameBoard = () => {
         EXP: charaDetails[0].stats.EXP,
         HP: {
           MAX: charaDetails[0].stats.HP.MAX,
-          Current: playerHP.Current
+          Current: playerHP.Current,
         },
-        Level: charaDetails[0].stats.Level
+        Level: charaDetails[0].stats.Level,
       },
       items: charaDetails[0].items,
       area: charaDetails[0].area,
       stratum: charaDetails[0].stratum,
       maxArea: record.maxArea,
-      maxStratum: record.maxStratum
-
-    }
+      maxStratum: record.maxStratum,
+    };
 
     updateUser(
       charaData,
       userRdxData.credentials.user.id,
       userRdxData.credentials.token
-    )
-    setTurn(1)
-  }
+    );
+    setTurn(1);
+  };
 
   return (
     <div className="gameBody">
@@ -268,7 +285,10 @@ export const GameBoard = () => {
             </div>
             <div>
               <div className="enemyStats"> AREA: {charaDetails[0].area}</div>
-              <div className="enemyStats"> STRATUM: {charaDetails[0].stratum}</div>
+              <div className="enemyStats">
+                {" "}
+                STRATUM: {charaDetails[0].stratum}
+              </div>
             </div>
             <div className="gameUpRight">
               <div className="enemySprite">
@@ -286,137 +306,43 @@ export const GameBoard = () => {
         )}
       </div>
 
-      <div className="gameMid">
-        <div className="gameScreen">
-          {enemyDetails.name !== "" ? (
-            <div>
-              {itemMenu == 1 ? (
-                <div >      
-                  <div>INVENTORY</div>            
-                  <div>
-                    {charaDetails[0].items.map((item, index) => {
-                  return (
-                    <div key={index} className="itemContainer">
-                      <div className="charaSelectionContainer3">
-                        <div onClick={() => useItem(item, index)} > {item} </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                  </div>
-                  <div onClick={() => setItemMenu(0)}>Close</div>
-                  </div>
-              ) : (
-                <div>
-                  {statsMenu == 1 ? (
-                    <div onClick={() => setStatsMenu(0)}>
-                      <div>Attack: {charaDetails[0].stats.Attack}</div>
-                      <div>Defense: {charaDetails[0].stats.Defense}</div>
-                      <div>Charisma: {charaDetails[0].stats.Charisma}</div>
-                      <div>EXP: {charaDetails[0].stats.EXP}</div>
-                      <div>Max Area: {charaDetails[0].maxArea}</div>
-                      <div>Max Stratum: {charaDetails[0].maxStratum}</div>
-                    </div>
-                  ) : (
-                    <div>
-                      {turn == 0 ? (
-                        <div onClick={() => setTurn(1)}>{GameScreen[0]}</div>
-                      ) : (
-                        <div>
-                          {turn == 1 ? (
-                            <div
-                              onClick={() => {
-                                setTurn(2);
-                                setEnemyCount(enemyCount + 1);
-                              }}
-                            >
-                              {GameScreen[1]}
-                            </div>
-                          ) : (
-                            <div>
-                              {turn == 2 ? (
-                                <div onClick={() => setTurn(3)}>
-                                  {GameScreen[2]}
-                                  {enemyDetails.name}
-                                </div>
-                              ) : (
-                                <div>
-                                  {turn == 3 ? (
-                                    <div>
-                                      {GameScreen[3]}
-                                      {charaDetails[0].user}
-                                      {GameScreen[4]}
-                                    </div>
-                                  ) : (
-                                    <div>
-                                      {turn == 4 ? (
-                                        <div onClick={() => checkHP()}>
-                                          {charaDetails[0].user}
-                                          {GameScreen[5]}
-                                          {enemyDetails.name}
-                                        </div>
-                                      ) : (
-                                        <div>
-                                          {turn == 5 ? (
-                                            <div onClick={() => attack()}>
-                                              {GameScreen[3]}
-                                              {enemyDetails.name}
-                                              {GameScreen[4]}
-                                            </div>
-                                          ) : (
-                                            <div>
-                                              {turn == 6 ? (
-                                                <div onClick={() => checkHP()}>
-                                                  {enemyDetails.name}
-                                                  {GameScreen[5]}
-                                                  {charaDetails[0].user}
-                                                </div>
-                                          ) : (
-                                            <div>
-                                            {turn == 7 ? (
-                                              <div onClick={() => updateChara()}>
-                                                {charaDetails[0].user}
-                                                {GameScreen[6]}
-                                                {enemyDetails.name}
-                                              </div>
-                                              ) : (
-                                                <div>
-                                                {turn == 8 ? (
-                                                  <div>
-                                                    {enemyDetails.name}
-                                                    {GameScreen[6]}
-                                                    {charaDetails[0].user}
-                                                    {GameScreen[7]}
-                                                  </div>
-                                                  ) : (
-                                                    <div>Loading</div>
-                                                  )}
-                                                    </div>
-                                              )}
-                                                </div>
-                                          )}
-                                            </div>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div>Loading</div>
-          )}
-        </div>
-      </div>
+<div className="gameMid">
+  <div className="gameScreen">
+    {enemyDetails.name ? (
+      itemMenu === 1 ? (
+        <ItemScreen
+          items={charaDetails[0].items}
+          useItem={useItem}
+          closeMenu={() => setItemMenu(0)}
+        />
+      ) : statsMenu === 1 ? (
+        <StatsScreen
+          stats={charaDetails[0].stats}
+          maxArea={charaDetails[0].maxArea}
+          maxStratum={charaDetails[0].maxStratum}
+          closeMenu={() => setStatsMenu(0)}
+        />
+      ) : (
+        <GameScreen
+          {...{
+            turn,
+            setTurn,
+            enemyDetails,
+            charaDetails,
+            enemyCount,
+            setEnemyCount,
+            GameText,
+            checkHP,
+            attack,
+            updateChara,
+          }}
+        />
+      )
+    ) : (
+      <div>Loading</div>
+    )}
+  </div>
+</div>
 
       <div className="gameDown">
         <div>
@@ -426,7 +352,9 @@ export const GameBoard = () => {
                 return (
                   <div key={chara._id} className="gameDownLeft">
                     <div className="playerInfo">
-                      <div>{chara.user}</div>
+                      <div>
+                        {chara.user} Level: {chara.stats.Level}
+                      </div>
                       <div>
                         {chara.stats.HP.MAX} / {playerHP.Current}
                       </div>

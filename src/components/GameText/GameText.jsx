@@ -1,4 +1,4 @@
-export const GameScreen = [
+export const GameText = [
     'Welcome to the game, press here',
     'Looking for a new opponent...',
     "It's a ",
