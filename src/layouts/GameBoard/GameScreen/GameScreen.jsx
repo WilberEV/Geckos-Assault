@@ -1,3 +1,5 @@
+import { images } from "../../../components/Images/Images";
+
 export const GameScreen = ({
   turn,
   setTurn,
@@ -9,7 +11,15 @@ export const GameScreen = ({
   checkHP,
   attack,
   updateChara,
+  levelUp,
 }) => {
+
+
+  const handleLevelUp = (Stat) => {
+    levelUp(Stat);
+  };
+
+
   const renderTurn = () => {
     switch (turn) {
       case 0:
@@ -66,12 +76,25 @@ export const GameScreen = ({
           <div>
             {enemyDetails.name} {GameText[6]} {charaDetails[0].user}{" "}
             {GameText[7]}
+            <img src={images.doid}/> 
+          </div>
+        );
+      case 9:
+        return (
+          <div>
+            <div>
+              You've leveled up! Please choose a stat to increase!
+            </div>
+            <div>
+              <div onClick={() => handleLevelUp("HP")}>HP</div>
+              <div onClick={() => handleLevelUp("Attack")}>Attack</div>
+              <div onClick={() => handleLevelUp("Defense")}>Defense</div>
+            </div>
           </div>
         );
       default:
         return <div>Loading</div>;
     }
   };
-
   return <div>{renderTurn()}</div>;
 };

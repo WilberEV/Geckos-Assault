@@ -53,6 +53,7 @@ export const GameBoard = () => {
   const [statsMenu, setStatsMenu] = useState(0);
   const [itemMenu, setItemMenu] = useState(0);
   const [enemyCount, setEnemyCount] = useState(0);
+  const [statPoints, setStatPoints] = useState(0);
 
   useEffect(() => {
     bringUserProfile(
@@ -186,7 +187,8 @@ export const GameBoard = () => {
             charaDetails[0].stats.expMulti.Max;
           charaDetails[0].stats.expMulti.Max =
             charaDetails[0].stats.expMulti.Max * 2;
-          setTurn(8);
+            setStatPoints(5)
+            setTurn(9);
         } else {
           setTurn(7);
         }
@@ -205,7 +207,7 @@ export const GameBoard = () => {
   //Use Item
   const useItem = (item, id) => {
     if (item == "Potion") {
-      let res = Math.round(playerHP.Current + 10);
+      let res = Math.round(playerHP.Current + 20);
 
       if (res > playerHP.MAX) {
         res = playerHP.MAX;
@@ -227,6 +229,27 @@ export const GameBoard = () => {
       setCharaDetails(updateItems);
     }
   };
+
+  //Level Up chara
+  const levelUp = (Stat) => {
+
+  if (Stat === "HP") {
+
+    let HP = {
+      MAX: playerHP.MAX + 5,
+      Current: playerHP.Current + 5,
+    };
+    setPlayerHP(HP);
+  } else {
+    charaDetails[0].stats[Stat] = charaDetails[0].stats[Stat] + 1;
+  }
+  console.log(statPoints)
+  setStatPoints(statPoints-1)
+  
+  if (statPoints == 1) {
+    setTurn(1)
+  }
+};
 
   //Update Character
   const updateChara = () => {
@@ -335,6 +358,7 @@ export const GameBoard = () => {
             checkHP,
             attack,
             updateChara,
+            levelUp,
           }}
         />
       )
@@ -356,7 +380,7 @@ export const GameBoard = () => {
                         {chara.user} Level: {chara.stats.Level}
                       </div>
                       <div>
-                        {chara.stats.HP.MAX} / {playerHP.Current}
+                        {playerHP.MAX} / {playerHP.Current}
                       </div>
                     </div>
                     <div className="playerContainer">
